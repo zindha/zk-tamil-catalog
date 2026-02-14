@@ -60,27 +60,26 @@ This addon provides **catalogs only**. To view full movie/series details (cast, 
 
 ### For Users
 
-1. **Visit the configuration page**: [Configure ZK Tamil Catalog](https://zk-tamil-catalog.zindhak1928.workers.dev/configure)
+**Step 1: Get a TMDB API Key**
+- Go to [TMDB API Settings](https://www.themoviedb.org/settings/api)
+- Sign up/Login and request an API key
+- Copy your API key
 
-2. **Get a TMDB API Key**:
-   - Go to [TMDB API Settings](https://www.themoviedb.org/settings/api)
-   - Sign up/Login and request an API key
-   - Copy your API key
+**Step 2: Configure the Addon**
+- Visit [Configure ZK Tamil Catalog](https://zk-tamil-catalog.zindhak1928.workers.dev/configure)
+- Paste your TMDB API key
+- Set cache duration (default: 3600 seconds)
+- Toggle "Include Dubbed Movies" if desired
+- Click "Generate Install Link"
 
-3. **Configure the addon**:
-   - Paste your TMDB API key
-   - Set cache duration (default: 3600 seconds)
-   - Toggle "Include Dubbed Movies" if desired
-   - Click "Generate Install Link"
+**Step 3: Install to Stremio**
+- Click "Install to Stremio" button
+- Or copy the manifest URL and paste in Stremio
 
-4. **Install to Stremio**:
-   - Click "Install to Stremio" button
-   - Or copy the manifest URL and paste in Stremio
-
-5. **Install TMDB Metadata Addon** (Required):
-   - Open Stremio → Addons → Community Addons
-   - Search "TMDB"
-   - Install "TMDB Catalog" or "TMDB Addon"
+**Step 4: Install TMDB Metadata Addon (Required)**
+- Open Stremio → Addons → Community Addons
+- Search "TMDB"
+- Install "TMDB Catalog" or "TMDB Addon"
 
 ---
 
@@ -92,209 +91,237 @@ This addon provides **catalogs only**. To view full movie/series details (cast, 
 - TMDB API key
 
 ### Project Structure
+
+```
 zk-tamil-catalog/
 ├── src/
-│ ├── worker.js # Main Cloudflare Worker entry point
-│ ├── manifest.js # Stremio manifest definition
-│ ├── catalog.js # Catalog handler with filtering logic
-│ ├── tmdb.js # TMDB API client with caching
-│ └── pages.js # Landing page HTML templates
+│   ├── worker.js       # Main Cloudflare Worker entry point
+│   ├── manifest.js     # Stremio manifest definition
+│   ├── catalog.js      # Catalog handler with filtering logic
+│   ├── tmdb.js         # TMDB API client with caching
+│   └── pages.js        # Landing page HTML templates
 ├── assets/
-│ ├── Logo.png # Addon logo
-│ └── zk_tamil_catalog_favicon.ico # Favicon
-├── wrangler.toml # Cloudflare Workers configuration
-└── package.json # Node.js dependencies
-
-text
+│   ├── Logo.png        # Addon logo
+│   └── zk_tamil_catalog_favicon.ico  # Favicon
+├── wrangler.toml       # Cloudflare Workers configuration
+└── package.json        # Node.js dependencies
+```
 
 ### Local Development
 
-1. **Clone the repository**:
+Clone the repository:
+
 ```bash
 git clone https://github.com/zindha/zk-tamil-catalog.git
 cd zk-tamil-catalog
+```
+
 Install dependencies:
 
-bash
+```bash
 npm install
-Run locally (with Wrangler):
+```
 
-bash
+Run locally with Wrangler:
+
+```bash
 npx wrangler dev
+```
+
 Test the addon:
+- Visit http://localhost:8787/
+- Configure with your TMDB API key
+- Test manifest at http://localhost:8787/YOUR_CONFIG/manifest.json
 
-Visit http://localhost:8787/
+### Deployment
 
-Configure with your TMDB API key
+#### Deploy to Cloudflare Workers
 
-Test manifest: http://localhost:8787/YOUR_CONFIG/manifest.json
-
-Deployment
-Deploy to Cloudflare Workers
 Login to Cloudflare:
 
-bash
+```bash
 npx wrangler login
+```
+
 Deploy:
 
-bash
+```bash
 npx wrangler deploy
-Your addon is live!
+```
 
-text
+Your addon will be live at:
+
+```
 https://zk-tamil-catalog.YOUR_SUBDOMAIN.workers.dev/
-Deploy via GitHub Actions (Automated)
+```
+
+#### Deploy via GitHub Actions (Automated)
+
 This repository is configured for automatic deployment on push to main branch.
 
 Set up GitHub Secrets:
-
-Go to Repository Settings → Secrets and Variables → Actions
-
-Add CLOUDFLARE_API_TOKEN with your Cloudflare API token
-
-Add CLOUDFLARE_ACCOUNT_ID with your Cloudflare account ID
+- Go to Repository Settings → Secrets and Variables → Actions
+- Add CLOUDFLARE_API_TOKEN with your Cloudflare API token
+- Add CLOUDFLARE_ACCOUNT_ID with your Cloudflare account ID
 
 Push to main branch:
 
-bash
+```bash
 git push origin main
-Automatic deployment will trigger via GitHub Actions
+```
 
-🔧 Configuration
-Manifest Configuration
+Automatic deployment will trigger via GitHub Actions.
+
+---
+
+## 🔧 Configuration
+
+### Manifest Configuration
+
 Users configure the addon with:
+- **TMDB API Key** (required) - Your TMDB API v3 key
+- **Cache Duration** (optional) - Default: 3600 seconds (1 hour)
+- **Include Dubbed Movies** (optional) - Toggle Tamil dubbed content
 
-TMDB API Key (required) - Your TMDB API v3 key
+### Content Filters
 
-Cache Duration (optional) - Default: 3600 seconds (1 hour)
-
-Include Dubbed Movies (optional) - Toggle Tamil dubbed content
-
-Content Filters
 The addon applies several filters to ensure quality content:
 
-Movie Filters:
-Adult content keywords in title/description
+**Movie Filters:**
+- Adult content keywords in title/description
+- Movies with less than 15 votes AND less than 3.5 rating
+- Movies with less than 1.0 popularity AND less than 10 votes
+- Explicit adult film markers
 
-Movies with <15 votes AND <3.5 rating
+**Series Filters:**
+- Non-Tamil language content
+- TV serials with 100+ episodes
+- Long-running scripted series (3+ seasons)
+- Talk shows and interview programs
+- Reality shows are **included** (Bigg Boss, Cooku with Comali, etc.)
 
-Movies with <1.0 popularity AND <10 votes
+---
 
-Explicit adult film markers
+## 📊 API Endpoints
 
-Series Filters:
-Non-Tamil language content
+### Landing Page
 
-TV serials with 100+ episodes
-
-Long-running scripted series (3+ seasons)
-
-Talk shows and interview programs
-
-Reality shows are included (Bigg Boss, Cooku with Comali, etc.)
-
-📊 API Endpoints
-Landing Page
-text
+```
 GET /
+```
+
 Returns the main landing page with addon information.
 
-Configuration Page
-text
+### Configuration Page
+
+```
 GET /configure
+```
+
 Returns the configuration form for users to set up the addon.
 
-Manifest
-text
+### Manifest
+
+```
 GET /{base64Config}/manifest.json
+```
+
 Returns the Stremio manifest with user configuration.
 
-Catalog
-text
+### Catalog
+
+```
 GET /{base64Config}/catalog/{type}/{id}.json
 GET /{base64Config}/catalog/{type}/{id}/skip={offset}.json
 GET /{base64Config}/catalog/{type}/{id}/search={query}.json
+```
+
 Returns catalog results (movies or series).
 
-🎨 Catalogs
-Movie Catalogs
-ID	Name	Description
-tamil_top_rated	Tamil - Top Rated	Highest-rated Tamil movies (50+ votes)
-tamil_latest	Tamil - Latest	Latest Tamil movie releases
-tamil_1980s	Tamil - 1980s	Tamil movies from 1980-1989
-tamil_1990s	Tamil - 1990s	Tamil movies from 1990-1999
-tamil_2000s	Tamil - 2000s	Tamil movies from 2000-2009
-tamil_2010s	Tamil - 2010s	Tamil movies from 2010-2019
-tamil_2020s	Tamil - 2020s	Tamil movies from 2020-2029
-tamil_dubbed	Tamil Dubbed Movies	Tamil dubbed from other languages
-tamil_search	Search Tamil Movies	Search functionality
-Series Catalogs
-ID	Name	Description
-tamil_series_trending	Tamil Series - Trending	Hot series from last 3 months
-tamil_series_popular	Tamil Series - Popular	All-time popular Tamil series
-tamil_series_latest	Tamil Series - Latest	Newest Tamil series releases
-🤝 Contributing
+---
+
+## 🎨 Catalogs
+
+### Movie Catalogs
+
+| ID | Name | Description |
+|---|---|---|
+| tamil_top_rated | Tamil - Top Rated | Highest-rated Tamil movies (50+ votes) |
+| tamil_latest | Tamil - Latest | Latest Tamil movie releases |
+| tamil_1980s | Tamil - 1980s | Tamil movies from 1980-1989 |
+| tamil_1990s | Tamil - 1990s | Tamil movies from 1990-1999 |
+| tamil_2000s | Tamil - 2000s | Tamil movies from 2000-2009 |
+| tamil_2010s | Tamil - 2010s | Tamil movies from 2010-2019 |
+| tamil_2020s | Tamil - 2020s | Tamil movies from 2020-2029 |
+| tamil_dubbed | Tamil Dubbed Movies | Tamil dubbed from other languages |
+| tamil_search | Search Tamil Movies | Search functionality |
+
+### Series Catalogs
+
+| ID | Name | Description |
+|---|---|---|
+| tamil_series_trending | Tamil Series - Trending | Hot series from last 3 months |
+| tamil_series_popular | Tamil Series - Popular | All-time popular Tamil series |
+| tamil_series_latest | Tamil Series - Latest | Newest Tamil series releases |
+
+---
+
+## 🤝 Contributing
+
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-How to Contribute:
-Fork the repository
+### How to Contribute:
 
-Create your feature branch (git checkout -b feature/AmazingFeature)
+1. Fork the repository
+2. Create your feature branch: `git checkout -b feature/AmazingFeature`
+3. Commit your changes: `git commit -m 'Add some AmazingFeature'`
+4. Push to the branch: `git push origin feature/AmazingFeature`
+5. Open a Pull Request
 
-Commit your changes (git commit -m 'Add some AmazingFeature')
+### Ideas for Contributions:
 
-Push to the branch (git push origin feature/AmazingFeature)
+- Add more decade-based catalogs
+- Improve content filtering algorithms
+- Add support for other regional Indian languages
+- Enhance UI/UX of landing pages
+- Add more series categories
 
-Open a Pull Request
+---
 
-Ideas for Contributions:
-Add more decade-based catalogs
+## 📝 License
 
-Improve content filtering algorithms
-
-Add support for other regional Indian languages
-
-Enhance UI/UX of landing pages
-
-Add more series categories
-
-📝 License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-🙏 Acknowledgments
-TMDB - For providing the movie/series database API
+---
 
-Stremio - For the amazing streaming platform
+## 🙏 Acknowledgments
 
-Cloudflare Workers - For serverless edge computing
+- **TMDB** - For providing the movie/series database API
+- **Stremio** - For the amazing streaming platform
+- **Cloudflare Workers** - For serverless edge computing
+- **Tamil Cinema** - For decades of amazing content
 
-Tamil Cinema - For decades of amazing content
+---
 
-📞 Support
-Issues: GitHub Issues
+## 📞 Support
 
-Discussions: GitHub Discussions
+- **Issues**: [GitHub Issues](https://github.com/zindha/zk-tamil-catalog/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/zindha/zk-tamil-catalog/discussions)
 
-⚖️ Disclaimer
+---
+
+## ⚖️ Disclaimer
+
 This product uses the TMDB API but is not endorsed or certified by TMDB. This addon is a catalog provider only and does not host, stream, or provide any copyrighted content. Users are responsible for ensuring they have the legal right to access content through their own streaming providers.
 
-<p align="center"> Made with ❤️ for Tamil cinema fans </p> <p align="center"> <a href="https://www.themoviedb.org/"> <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" alt="TMDB" width="100"/> </a> </p> ```
-This README includes:
+---
 
-✅ Clear overview and features
+<p align="center">
+  Made with ❤️ for Tamil cinema fans
+</p>
 
-✅ Step-by-step installation instructions
-
-✅ Development setup guide
-
-✅ Deployment instructions
-
-✅ API documentation
-
-✅ Catalog reference table
-
-✅ Contributing guidelines
-
-✅ Professional formatting with badges and images
-
-✅ Proper acknowledgments and disclaimers
+<p align="center">
+  <a href="https://www.themoviedb.org/">
+    <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" alt="TMDB" width="100"/>
+  </a>
+</p>
