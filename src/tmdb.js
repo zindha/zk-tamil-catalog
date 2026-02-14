@@ -8,8 +8,6 @@ export class TMDBClient {
 
   async fetchWithCache(url) {
     try {
-      console.log('Fetching TMDB URL:', url.replace(this.apiKey, 'API_KEY_HIDDEN'));
-      
       const response = await fetch(url, {
         headers: {
           'Accept': 'application/json'
@@ -17,13 +15,10 @@ export class TMDBClient {
       });
       
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('TMDB API error:', response.status, errorText);
         throw new Error(`TMDB API error: ${response.status}`);
       }
       
       const data = await response.json();
-      console.log('TMDB response:', data.total_results, 'total results');
       return data;
       
     } catch (error) {
@@ -33,47 +28,38 @@ export class TMDBClient {
   }
 
   async getTopRated(page = 1) {
-    // Get today's date in YYYY-MM-DD format
+    // Only filter: released movies, runtime 40+ min (to exclude shorts), minimum votes
     const today = new Date().toISOString().split('T')[0];
-    
-    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&sort_by=vote_average.desc&vote_count.gte=100&page=${page}&language=en-US&with_runtime.gte=60&release_date.lte=${today}`;
+    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&sort_by=vote_average.desc&vote_count.gte=50&page=${page}&language=en-US&with_runtime.gte=40&release_date.lte=${today}`;
     return this.fetchWithCache(url);
   }
 
   async getLatest(page = 1) {
+    // Less strict: 40+ minutes, released movies
     const today = new Date().toISOString().split('T')[0];
-    
-    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&sort_by=release_date.desc&page=${page}&language=en-US&with_runtime.gte=60&release_date.lte=${today}`;
+    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&sort_by=release_date.desc&page=${page}&language=en-US&with_runtime.gte=40&release_date.lte=${today}`;
     return this.fetchWithCache(url);
   }
 
   async getByYear(year, page = 1) {
-    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&primary_release_year=${year}&sort_by=popularity.desc&page=${page}&language=en-US&with_runtime.gte=60`;
+    // Year-based, 40+ minutes
+    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&primary_release_year=${year}&sort_by=popularity.desc&page=${page}&language=en-US&with_runtime.gte=40`;
     return this.fetchWithCache(url);
   }
 
   async getDubbed(page = 1) {
     const today = new Date().toISOString().split('T')[0];
-    
-    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=hi&with_spoken_languages=ta&sort_by=popularity.desc&page=${page}&language=en-US&with_runtime.gte=60&release_date.lte=${today}`;
+    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=hi&with_spoken_languages=ta&sort_by=popularity.desc&page=${page}&language=en-US&with_runtime.gte=40&release_date.lte=${today}`;
     return this.fetchWithCache(url);
   }
 
   async search(query, page = 1) {
+    // Search doesn't filter by runtime or release date initially
     const url = `${TMDB_BASE}/search/movie?api_key=${this.apiKey}&query=${encodeURIComponent(query)}&page=${page}&language=en-US`;
     return this.fetchWithCache(url);
   }
 
   convertToMeta(movie) {
-    // Additional client-side filtering
-    const releaseDate = movie.release_date ? new Date(movie.release_date) : null;
-    const today = new Date();
-    
-    // Skip if release date is in the future
-    if (releaseDate && releaseDate > today) {
-      return null;
-    }
-    
     const meta = {
       id: `tmdb:${movie.id}`,
       type: 'movie',
@@ -86,8 +72,7 @@ export class TMDBClient {
         : undefined,
       description: movie.overview || 'No description available',
       releaseInfo: movie.release_date ? movie.release_date.split('-')[0] : undefined,
-      imdbRating: movie.vote_average ? movie.vote_average.toFixed(1) : undefined,
-      genres: movie.genre_ids || []
+      imdbRating: movie.vote_average && movie.vote_average > 0 ? movie.vote_average.toFixed(1) : undefined
     };
     
     // Remove undefined values
