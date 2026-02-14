@@ -19,7 +19,7 @@ export class TMDBClient {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('TMDB API error:', response.status, errorText);
-        throw new Error(`TMDB API error: ${response.status} - ${errorText}`);
+        throw new Error(`TMDB API error: ${response.status}`);
       }
       
       const data = await response.json();
@@ -33,23 +33,29 @@ export class TMDBClient {
   }
 
   async getTopRated(page = 1) {
-    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&sort_by=vote_average.desc&vote_count.gte=50&page=${page}&language=en-US`;
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split('T')[0];
+    
+    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&sort_by=vote_average.desc&vote_count.gte=100&page=${page}&language=en-US&with_runtime.gte=60&release_date.lte=${today}`;
     return this.fetchWithCache(url);
   }
 
   async getLatest(page = 1) {
-    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&sort_by=release_date.desc&page=${page}&language=en-US`;
+    const today = new Date().toISOString().split('T')[0];
+    
+    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&sort_by=release_date.desc&page=${page}&language=en-US&with_runtime.gte=60&release_date.lte=${today}`;
     return this.fetchWithCache(url);
   }
 
   async getByYear(year, page = 1) {
-    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&primary_release_year=${year}&sort_by=popularity.desc&page=${page}&language=en-US`;
+    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&primary_release_year=${year}&sort_by=popularity.desc&page=${page}&language=en-US&with_runtime.gte=60`;
     return this.fetchWithCache(url);
   }
 
   async getDubbed(page = 1) {
-    // Movies with Hindi original language that have Tamil spoken language
-    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=hi&with_spoken_languages=ta&sort_by=popularity.desc&page=${page}&language=en-US`;
+    const today = new Date().toISOString().split('T')[0];
+    
+    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=hi&with_spoken_languages=ta&sort_by=popularity.desc&page=${page}&language=en-US&with_runtime.gte=60&release_date.lte=${today}`;
     return this.fetchWithCache(url);
   }
 
@@ -59,6 +65,15 @@ export class TMDBClient {
   }
 
   convertToMeta(movie) {
+    // Additional client-side filtering
+    const releaseDate = movie.release_date ? new Date(movie.release_date) : null;
+    const today = new Date();
+    
+    // Skip if release date is in the future
+    if (releaseDate && releaseDate > today) {
+      return null;
+    }
+    
     const meta = {
       id: `tmdb:${movie.id}`,
       type: 'movie',
