@@ -98,22 +98,32 @@ export class TMDBClient {
 
   // Series
   async getSeriesTrending(page = 1) {
-    // Genre exclusions: 10764 (Reality), 10767 (Talk Show)
-    const url = `${TMDB_BASE}/trending/tv/week?api_key=${this.apiKey}&page=${page}&language=en-US&with_original_language=ta&without_genres=10764,10767`;
-    return this.fetchWithCache(url, `series_trending_ta_p${page}`);
+    // Trending: Shows from THIS MONTH with high popularity
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startDate = firstDayOfMonth.toISOString().split('T')[0];
+    const today = now.toISOString().split('T')[0];
+    
+    // Get current month + last 3 months to have enough data
+    const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+    const threeMonthsAgoDate = threeMonthsAgo.toISOString().split('T')[0];
+    
+    // Sort by popularity for currently trending content
+    const url = `${TMDB_BASE}/discover/tv?api_key=${this.apiKey}&with_original_language=ta&air_date.gte=${threeMonthsAgoDate}&air_date.lte=${today}&sort_by=popularity.desc&page=${page}&language=en-US&without_genres=10764,10767&vote_count.gte=3`;
+    return this.fetchWithCache(url, `series_trending_ta_v4_p${page}`);
   }
 
   async getSeriesPopular(page = 1) {
-    // Exclude Reality (10764) and Talk (10767)
+    // Popular: All-time popular shows (no date filter)
     const url = `${TMDB_BASE}/discover/tv?api_key=${this.apiKey}&with_original_language=ta&sort_by=popularity.desc&page=${page}&language=en-US&without_genres=10764,10767&vote_count.gte=5`;
-    return this.fetchWithCache(url, `series_popular_ta_p${page}`);
+    return this.fetchWithCache(url, `series_popular_ta_v3_p${page}`);
   }
 
   async getSeriesLatest(page = 1) {
-    // Exclude Reality (10764) and Talk (10767)
+    // Latest: Most recently aired shows (by first air date)
     const today = new Date().toISOString().split('T')[0];
     const url = `${TMDB_BASE}/discover/tv?api_key=${this.apiKey}&with_original_language=ta&sort_by=first_air_date.desc&page=${page}&language=en-US&first_air_date.lte=${today}&without_genres=10764,10767`;
-    return this.fetchWithCache(url, `series_latest_ta_p${page}`);
+    return this.fetchWithCache(url, `series_latest_ta_v3_p${page}`);
   }
 
   convertToMeta(movie) {
@@ -124,7 +134,7 @@ export class TMDBClient {
       poster: movie.poster_path 
         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
         : undefined,
-      background: movie.backdrop_path
+      background: series.backdrop_path
         ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
         : undefined,
       description: movie.overview || 'No description available',
