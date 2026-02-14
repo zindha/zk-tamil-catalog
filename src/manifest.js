@@ -1,9 +1,9 @@
 export function getManifest(config) {
   return {
     id: 'org.zktamil.catalog',
-    version: '1.1.1',
+    version: '1.2.0',
     name: 'ZK Tamil Catalog',
-    description: 'Pure Tamil movie & series catalog with dubbed separation. Install a TMDB metadata addon for full details.',
+    description: 'Pure Tamil Movie & Series catalog with dubbed separation & Discover Tamil movies by decades (1980s-2020s). ⚠️ IMPORTANT: Install "TMDB Catalog" or "TMDB Addon" from Stremio Community Addons for full movie/series details and metadata.',
     
     logo: 'https://raw.githubusercontent.com/zindha/zk-tamil-catalog/refs/heads/main/assets/Logo.png',
     background: 'https://raw.githubusercontent.com/zindha/zk-tamil-catalog/refs/heads/main/assets/Logo.png',
