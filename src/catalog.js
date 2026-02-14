@@ -4,20 +4,11 @@ export async function handleCatalog(type, id, extra, config) {
   console.log('=== CATALOG HANDLER START ===');
   console.log('Type:', type);
   console.log('ID:', id);
-  console.log('Extra:', JSON.stringify(extra));
-  console.log('Config keys:', Object.keys(config));
-  console.log('Has API key:', !!config?.apiKey);
   
-  // Check if API key exists
   if (!config || !config.apiKey) {
-    console.error('CRITICAL: No API key in config!');
-    console.error('Config object:', JSON.stringify(config));
-    return { 
-      metas: []
-    };
+    console.error('No API key provided');
+    return { metas: [] };
   }
-  
-  console.log('API key found, length:', config.apiKey.length);
   
   try {
     const tmdb = new TMDBClient(config.apiKey, config.cacheDuration || 3600);
@@ -64,19 +55,35 @@ export async function handleCatalog(type, id, extra, config) {
         return { metas: [] };
     }
     
-    console.log('TMDB response received');
-    console.log('Results count:', data?.results?.length || 0);
-    
     if (!data || !data.results || data.results.length === 0) {
       console.warn('No results from TMDB');
       return { metas: [] };
     }
     
-    const metas = data.results
-      .filter(movie => movie.poster_path)
-      .map(movie => tmdb.convertToMeta(movie));
+    console.log('TMDB returned', data.results.length, 'movies');
     
-    console.log('Final metas count:', metas.length);
+    // Filter and convert to metas
+    const metas = data.results
+      .filter(movie => {
+        // Must have poster
+        if (!movie.poster_path) return false;
+        
+        // Check release date
+        if (movie.release_date) {
+          const releaseDate = new Date(movie.release_date);
+          const today = new Date();
+          if (releaseDate > today) {
+            console.log('Skipping unreleased:', movie.title, movie.release_date);
+            return false;
+          }
+        }
+        
+        return true;
+      })
+      .map(movie => tmdb.convertToMeta(movie))
+      .filter(meta => meta !== null); // Remove any nulls from convertToMeta
+    
+    console.log('Final metas count after filtering:', metas.length);
     console.log('=== CATALOG HANDLER END ===');
     
     return { metas };
@@ -84,8 +91,6 @@ export async function handleCatalog(type, id, extra, config) {
   } catch (error) {
     console.error('CATALOG ERROR:', error.message);
     console.error('Stack:', error.stack);
-    return { 
-      metas: []
-    };
+    return { metas: [] };
   }
 }
