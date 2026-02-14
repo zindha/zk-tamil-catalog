@@ -1,0 +1,26 @@
+{
+  "name": "zk-tamil-catalog",
+  "version": "1.0.0",
+  "description": "Pure Tamil catalog addon for Stremio with TMDB integration",
+  "main": "src/worker.js",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "wrangler dev --local"
+  },
+  "keywords": [
+    "stremio",
+    "addon",
+    "tamil",
+    "cloudflare-workers",
+    "tmdb"
+  ],
+  "author": "ZK Tamil Catalog",
+  "license": "MIT",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240909.0",
+    "wrangler": "^3.80.0"
+  },
+  "dependencies": {}
+}
