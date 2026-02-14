@@ -1,10 +1,13 @@
 export function getManifest(config) {
   return {
     id: 'org.zktamil.catalog',
-    version: '1.0.6',
+    version: '1.0.7',
     name: 'ZK Tamil Catalog',
     description: 'Pure Tamil movie catalog with dubbed separation. Install a TMDB metadata addon for full details.',
-    logo: 'https://i.imgur.com/your-logo.png',
+    
+    // Your GitHub logo URL
+    logo: 'https://raw.githubusercontent.com/zindha/zk-tamil-catalog/refs/heads/main/assets/Logo.png',
+    background: 'https://raw.githubusercontent.com/zindha/zk-tamil-catalog/refs/heads/main/assets/Logo.png',
     
     resources: ['catalog'],
     types: ['movie'],
