@@ -4,165 +4,98 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZK Tamil Catalog - Configuration</title>
+  <link rel="stylesheet" href="/style.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      min-height: 100vh;
       padding: 20px;
     }
     
-    .container {
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      max-width: 500px;
-      width: 100%;
-      padding: 40px;
-    }
-    
-    .logo {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    
-    .logo h1 {
-      color: #667eea;
-      font-size: 2rem;
-      margin-bottom: 5px;
-    }
-    
-    .logo p {
-      color: #666;
-      font-size: 0.9rem;
-    }
-    
-    .form-group {
-      margin-bottom: 25px;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 8px;
-      color: #333;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-    
-    input[type="text"],
-    input[type="number"] {
-      width: 100%;
-      padding: 12px 15px;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      font-size: 1rem;
-      transition: border-color 0.3s;
-    }
-    
-    input[type="text"]:focus,
-    input[type="number"]:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-    
-    .toggle-group {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .toggle-switch {
-      position: relative;
-      width: 60px;
-      height: 30px;
-    }
-    
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-    
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: 0.4s;
-      border-radius: 30px;
-    }
-    
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 22px;
-      width: 22px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      transition: 0.4s;
-      border-radius: 50%;
-    }
-    
-    input:checked + .slider {
-      background-color: #667eea;
-    }
-    
-    input:checked + .slider:before {
-      transform: translateX(30px);
-    }
-    
-    .install-btn {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    
-    .install-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-    }
-    
-    .install-btn:active {
-      transform: translateY(0);
-    }
-    
-    .info {
+    .success-section {
+      display: none;
       margin-top: 20px;
-      padding: 15px;
-      background: #f5f5f5;
+      padding: 20px;
+      background: #f0fdf4;
+      border: 2px solid #86efac;
       border-radius: 10px;
-      font-size: 0.85rem;
-      color: #666;
     }
     
-    .info a {
+    .success-section.show {
+      display: block;
+    }
+    
+    .manifest-url {
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      word-break: break-all;
+      font-size: 0.85rem;
+      font-family: monospace;
+      margin: 10px 0;
+      border: 1px solid #d1d5db;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .copy-btn, .open-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.95rem;
+    }
+    
+    .copy-btn {
+      background: #667eea;
+      color: white;
+    }
+    
+    .copy-btn:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+    
+    .copy-btn.copied {
+      background: #10b981;
+    }
+    
+    .open-btn {
+      background: #764ba2;
+      color: white;
+    }
+    
+    .open-btn:hover {
+      background: #653a8a;
+      transform: translateY(-2px);
+    }
+    
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
       color: #667eea;
       text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .back-link:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <a href="/" class="back-link">← Back to Home</a>
+    
     <div class="logo">
       <h1>🎬 ZK Tamil Catalog</h1>
       <p>Configure your Tamil movie catalog</p>
@@ -190,9 +123,24 @@
       </div>
       
       <button type="submit" class="install-btn">
-        📦 Install to Stremio
+        📦 Generate Install Link
       </button>
     </form>
+    
+    <div id="successSection" class="success-section">
+      <strong>✅ Configuration Ready!</strong>
+      <p style="margin: 10px 0; color: #059669;">Your addon manifest URL:</p>
+      <div class="manifest-url" id="manifestUrl"></div>
+      
+      <div class="button-group">
+        <button class="copy-btn" id="copyBtn">
+          📋 Copy Link
+        </button>
+        <button class="open-btn" id="openBtn">
+          🚀 Install to Stremio
+        </button>
+      </div>
+    </div>
     
     <div class="info">
       <strong>ℹ️ How to get TMDB API Key:</strong><br>
@@ -203,6 +151,8 @@
   </div>
   
   <script>
+    let manifestUrl = '';
+    
     document.getElementById('configForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
@@ -214,9 +164,44 @@
       
       const encodedConfig = btoa(JSON.stringify(config));
       const workerUrl = window.location.origin;
-      const manifestUrl = `${workerUrl}/${encodedConfig}/manifest.json`;
+      manifestUrl = `${workerUrl}/${encodedConfig}/manifest.json`;
       
-      // Open Stremio with the addon
+      // Show success section
+      document.getElementById('successSection').classList.add('show');
+      document.getElementById('manifestUrl').textContent = manifestUrl;
+      
+      // Scroll to success section
+      document.getElementById('successSection').scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    // Copy to clipboard
+    document.getElementById('copyBtn').addEventListener('click', async function() {
+      try {
+        await navigator.clipboard.writeText(manifestUrl);
+        const btn = this;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✓ Copied!';
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      } catch (err) {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = manifestUrl;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        alert('Link copied to clipboard!');
+      }
+    });
+    
+    // Open in Stremio
+    document.getElementById('openBtn').addEventListener('click', function() {
       window.location.href = `stremio://${manifestUrl.replace('https://', '')}`;
     });
   </script>
