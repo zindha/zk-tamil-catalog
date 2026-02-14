@@ -1,10 +1,10 @@
 export function getManifest(config) {
   return {
     id: 'org.zktamil.catalog',
-    version: '1.1.0',
+    version: '1.0.2',
     name: 'ZK Tamil Catalog',
     description: 'Pure Tamil movie catalog with dubbed separation',
-    logo: 'https://i.imgur.com/your-logo.png', // Add your logo URL
+    logo: 'https://i.imgur.com/your-logo.png',
     
     resources: ['catalog'],
     types: ['movie'],
@@ -53,7 +53,7 @@ export function getManifest(config) {
       }
     ],
     
-    idPrefixes: ['tmdb:']
-    // Removed behaviorHints - no longer needed
+    // Support both IMDB IDs and TMDB IDs
+    idPrefixes: ['tt', 'tmdb:']
   };
 }
