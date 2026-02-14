@@ -50,12 +50,24 @@ export async function handleCatalog(type, id, extra, config) {
       return { metas: [] };
     }
     
-    // Simple filtering: just poster and basic validation
-    const metas = data.results
-      .filter(movie => movie.poster_path) // Must have poster
-      .map(movie => tmdb.convertToMeta(movie));
+    console.log('TMDB returned', data.results.length, 'movies');
     
-    console.log('Returning', metas.length, 'movies');
+    // Filter movies with posters
+    const moviesWithPosters = data.results.filter(movie => movie.poster_path);
+    
+    // Fetch IMDB IDs for all movies in parallel
+    const imdbPromises = moviesWithPosters.map(movie => 
+      tmdb.getImdbId(movie.id)
+    );
+    
+    const imdbIds = await Promise.all(imdbPromises);
+    
+    // Convert to metas with IMDB IDs
+    const metas = moviesWithPosters.map((movie, index) => {
+      return tmdb.convertToMeta(movie, imdbIds[index]);
+    });
+    
+    console.log('Returning', metas.length, 'movies with IMDB IDs');
     
     return { metas };
     
