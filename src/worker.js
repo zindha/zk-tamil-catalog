@@ -1,36 +1,12 @@
 import { getManifest } from './manifest.js';
 import { handleCatalog } from './catalog.js';
 
-// Import static assets
-import indexHtml from '../public/index.html';
-import configureHtml from '../public/configure.html';
-import styleCss from '../public/style.css';
-
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
     
-    // Serve static files
-    if (path === '/' || path === '/index.html') {
-      return new Response(indexHtml, {
-        headers: { 'Content-Type': 'text/html; charset=utf-8' }
-      });
-    }
-    
-    if (path === '/configure' || path === '/configure.html') {
-      return new Response(configureHtml, {
-        headers: { 'Content-Type': 'text/html; charset=utf-8' }
-      });
-    }
-    
-    if (path === '/style.css') {
-      return new Response(styleCss, {
-        headers: { 'Content-Type': 'text/css; charset=utf-8' }
-      });
-    }
-    
-    // Parse config from URL
+    // Parse config from URL (for manifest and catalog routes)
     const configMatch = path.match(/^\/([^\/]+)\//);
     let config = {};
     
@@ -43,22 +19,27 @@ export default {
     }
     
     // CORS headers
-    const headers = {
+    const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': '*',
-      'Content-Type': 'application/json'
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
     };
     
     // Handle CORS preflight
     if (request.method === 'OPTIONS') {
-      return new Response(null, { headers });
+      return new Response(null, { headers: corsHeaders });
     }
     
     // Handle manifest
     if (path.endsWith('/manifest.json')) {
       return new Response(
         JSON.stringify(getManifest(config)),
-        { headers }
+        { 
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json'
+          }
+        }
       );
     }
     
@@ -70,15 +51,30 @@ export default {
       
       try {
         const result = await handleCatalog(type, id, extra, config);
-        return new Response(JSON.stringify(result), { headers });
+        return new Response(
+          JSON.stringify(result), 
+          { 
+            headers: {
+              ...corsHeaders,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
       } catch (error) {
         return new Response(
           JSON.stringify({ error: error.message }), 
-          { status: 500, headers }
+          { 
+            status: 500,
+            headers: {
+              ...corsHeaders,
+              'Content-Type': 'application/json'
+            }
+          }
         );
       }
     }
     
-    return new Response('Not Found', { status: 404 });
+    // Let Cloudflare serve static assets (index.html, configure.html, style.css)
+    return env.ASSETS.fetch(request);
   }
 };
