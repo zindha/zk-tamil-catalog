@@ -21,27 +21,19 @@ const ADULT_KEYWORDS = [
 
 // Talk shows and interview programs to filter
 const TALK_SHOW_KEYWORDS = [
-  // Talk shows and interviews
   'neeya naana', 'koffee with', 'coffee with',
   'interview with', 'in conversation',
   'special interview', 'exclusive interview',
-  
-  // Award shows and special events
   'vijay television awards', 'zee tamil awards',
   'filmfare awards', 'awards ceremony',
-  
-  // Making of / Behind the scenes
   'making of', 'behind the scenes',
   'special', 'tribute to'
 ];
 
 // TV serial patterns (daily soaps)
 const TV_SERIAL_KEYWORDS = [
-  // Common Tamil TV serial words
   'serial', 'sun tv', 'vijay tv', 'zee tamil',
   'colors tamil', 'star vijay',
-  
-  // Typical serial title patterns
   'vamsam', 'bharathi kannamma', 'pandian stores',
   'raja rani', 'baakiyalakshmi', 'sembaruthi',
   'mullum malarum', 'chinna thambi', 'ganga',
@@ -50,13 +42,11 @@ const TV_SERIAL_KEYWORDS = [
 ];
 
 function isAdultContent(movie) {
-  // 1. Check explicit adult flag
   if (movie.adult === true) {
     console.log('Adult flag:', movie.title);
     return true;
   }
   
-  // 2. Check title for adult keywords
   const title = (movie.title || movie.original_title || '').toLowerCase();
   for (const keyword of ADULT_KEYWORDS) {
     if (title.includes(keyword)) {
@@ -65,7 +55,6 @@ function isAdultContent(movie) {
     }
   }
   
-  // 3. Check description for adult keywords
   const overview = (movie.overview || '').toLowerCase();
   const explicitKeywords = ['erotic', 'erotica', 'softcore', 'hardcore', 'porn', 'xxx', 'adult film', 'sex'];
   for (const keyword of explicitKeywords) {
@@ -75,13 +64,11 @@ function isAdultContent(movie) {
     }
   }
   
-  // 4. Very low quality filter
   if (movie.vote_count && movie.vote_count < 15 && movie.vote_average && movie.vote_average < 3.5) {
     console.log('Low quality/obscure:', movie.title, '- votes:', movie.vote_count, 'rating:', movie.vote_average);
     return true;
   }
   
-  // 5. Very low popularity filter
   if (movie.popularity && movie.popularity < 1.0 && movie.vote_count && movie.vote_count < 10) {
     console.log('Very low popularity/obscure:', movie.title, '- popularity:', movie.popularity);
     return true;
@@ -94,7 +81,12 @@ function isTalkShowOrSerial(series) {
   const name = (series.name || series.original_name || '').toLowerCase();
   const overview = (series.overview || '').toLowerCase();
   
-  // 1. Check for talk shows
+  // Check original language to ensure it's Tamil
+  if (series.original_language && series.original_language !== 'ta') {
+    console.log('Non-Tamil series filtered:', series.name, '- language:', series.original_language);
+    return true;
+  }
+  
   for (const keyword of TALK_SHOW_KEYWORDS) {
     if (name.includes(keyword) || overview.includes(keyword)) {
       console.log('Talk show filtered:', series.name, '- keyword:', keyword);
@@ -102,7 +94,6 @@ function isTalkShowOrSerial(series) {
     }
   }
   
-  // 2. Check for TV serials (daily soaps)
   for (const keyword of TV_SERIAL_KEYWORDS) {
     if (name.includes(keyword)) {
       console.log('TV serial filtered:', series.name, '- keyword:', keyword);
@@ -110,15 +101,11 @@ function isTalkShowOrSerial(series) {
     }
   }
   
-  // 3. Filter by episode count - TV serials typically have 100+ episodes
   if (series.number_of_episodes && series.number_of_episodes > 100) {
     console.log('TV serial filtered (too many episodes):', series.name, '- episodes:', series.number_of_episodes);
     return true;
   }
   
-  // 4. Filter by type - exclude scripted TV shows, keep only limited series/miniseries
-  // Scripted series = 0 (Scripted), Documentary = 1, Reality = 2, Talk Show = 3
-  // We want to keep Reality (2) and filter Talk Show (3)
   if (series.type === 'Scripted' && series.number_of_seasons && series.number_of_seasons > 3) {
     console.log('Long-running scripted series filtered:', series.name, '- seasons:', series.number_of_seasons);
     return true;
@@ -212,30 +199,21 @@ export async function handleCatalog(type, id, extra, config) {
     
     console.log('TMDB returned', data.results.length, isSeries ? 'series' : 'movies');
     
-    // Filter and convert
     let metas;
     
     if (isSeries) {
       metas = data.results
         .filter(series => {
-          // Must have poster
           if (!series.poster_path) return false;
-          
-          // Filter talk shows and TV serials
           if (isTalkShowOrSerial(series)) return false;
-          
           return true;
         })
         .map(series => tmdb.convertToSeriesMeta(series));
     } else {
       metas = data.results
         .filter(movie => {
-          // Must have poster
           if (!movie.poster_path) return false;
-          
-          // Check for adult content
           if (isAdultContent(movie)) return false;
-          
           return true;
         })
         .map(movie => tmdb.convertToMeta(movie));
