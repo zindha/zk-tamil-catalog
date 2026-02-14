@@ -1,9 +1,9 @@
 export function getManifest(config) {
   return {
     id: 'org.zktamil.catalog',
-    version: '1.0.2',
+    version: '1.0.6',
     name: 'ZK Tamil Catalog',
-    description: 'Pure Tamil movie catalog with dubbed separation',
+    description: 'Pure Tamil movie catalog with dubbed separation. Install a TMDB metadata addon for full details.',
     logo: 'https://i.imgur.com/your-logo.png',
     
     resources: ['catalog'],
@@ -28,8 +28,40 @@ export function getManifest(config) {
       },
       {
         type: 'movie',
-        id: 'tamil_by_year',
-        name: 'Tamil - By Year',
+        id: 'tamil_1980s',
+        name: 'Tamil - 1980s',
+        extra: [
+          { name: 'skip', isRequired: false }
+        ]
+      },
+      {
+        type: 'movie',
+        id: 'tamil_1990s',
+        name: 'Tamil - 1990s',
+        extra: [
+          { name: 'skip', isRequired: false }
+        ]
+      },
+      {
+        type: 'movie',
+        id: 'tamil_2000s',
+        name: 'Tamil - 2000s',
+        extra: [
+          { name: 'skip', isRequired: false }
+        ]
+      },
+      {
+        type: 'movie',
+        id: 'tamil_2010s',
+        name: 'Tamil - 2010s',
+        extra: [
+          { name: 'skip', isRequired: false }
+        ]
+      },
+      {
+        type: 'movie',
+        id: 'tamil_2020s',
+        name: 'Tamil - 2020s',
         extra: [
           { name: 'skip', isRequired: false }
         ]
@@ -53,7 +85,6 @@ export function getManifest(config) {
       }
     ],
     
-    // Support both IMDB IDs and TMDB IDs
-    idPrefixes: ['tt', 'tmdb:']
+    idPrefixes: ['tmdb:']
   };
 }
