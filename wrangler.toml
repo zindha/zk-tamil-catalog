@@ -1,6 +1,17 @@
 name = "zk-tamil-catalog"
 main = "src/worker.js"
 compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
 
+# Static assets configuration
 [site]
 bucket = "./public"
+
+# Optional: Environment variables
+# [vars]
+# ENVIRONMENT = "production"
+
+# Optional: KV namespace for advanced caching
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "your-kv-namespace-id"
