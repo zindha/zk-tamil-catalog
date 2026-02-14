@@ -50,18 +50,18 @@ export class TMDBClient {
   async getTopRated(page = 1) {
     const today = new Date().toISOString().split('T')[0];
     const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&sort_by=vote_average.desc&vote_count.gte=50&page=${page}&language=en-US&with_runtime.gte=40&release_date.lte=${today}&include_adult=false`;
-    return this.fetchWithCache(url, `top_rated_ta_p${page}`);
+    return this.fetchWithCache(url, `top_rated_ta_v2_p${page}`);
   }
 
   async getLatest(page = 1) {
     const today = new Date().toISOString().split('T')[0];
     const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&sort_by=release_date.desc&page=${page}&language=en-US&with_runtime.gte=40&release_date.lte=${today}&include_adult=false`;
-    return this.fetchWithCache(url, `latest_ta_p${page}`);
+    return this.fetchWithCache(url, `latest_ta_v2_p${page}`);
   }
 
   async getByDecade(startYear, endYear, page = 1) {
     const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&primary_release_date.gte=${startYear}-01-01&primary_release_date.lte=${endYear}-12-31&sort_by=popularity.desc&page=${page}&language=en-US&with_runtime.gte=40&include_adult=false`;
-    return this.fetchWithCache(url, `decade_${startYear}_${endYear}_ta_p${page}`);
+    return this.fetchWithCache(url, `decade_${startYear}_${endYear}_ta_v2_p${page}`);
   }
 
   async get1980s(page = 1) {
@@ -87,12 +87,12 @@ export class TMDBClient {
   async getDubbed(page = 1) {
     const today = new Date().toISOString().split('T')[0];
     const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=hi&with_spoken_languages=ta&sort_by=popularity.desc&page=${page}&language=en-US&with_runtime.gte=40&release_date.lte=${today}&include_adult=false`;
-    return this.fetchWithCache(url, `dubbed_ta_p${page}`);
+    return this.fetchWithCache(url, `dubbed_ta_v2_p${page}`);
   }
 
   async search(query, page = 1) {
     const url = `${TMDB_BASE}/search/movie?api_key=${this.apiKey}&query=${encodeURIComponent(query)}&page=${page}&language=en-US&include_adult=false`;
-    return this.fetchWithCache(url, `search_${query}_p${page}`);
+    return this.fetchWithCache(url, `search_${query}_v2_p${page}`);
   }
 
   convertToMeta(movie) {
