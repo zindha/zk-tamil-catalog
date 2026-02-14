@@ -7,7 +7,7 @@ const ADULT_KEYWORDS = [
   'xxx', 'adult film', 'sex film', 'blue film',
   
   // Specific known adult Tamil movies
-  'shanthi appuram nithya', 'anagarigam', 'anaagarigam'
+  'shanthi appuram nithya', 'anagarigam', 'anaagarigam',
   'hot night', 'midnight', 'masala', 'b grade', 'b-grade',
   
   // Suggestive patterns
