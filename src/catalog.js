@@ -7,7 +7,7 @@ const ADULT_KEYWORDS = [
   'xxx', 'adult film', 'sex film', 'blue film',
   
   // Specific known adult Tamil movies
-  'shanthi appuram nithya', 'anagarigam',
+  'shanthi appuram nithya', 'anagarigam', 'anaagarigam'
   'hot night', 'midnight', 'masala', 'b grade', 'b-grade',
   
   // Suggestive patterns
@@ -16,7 +16,7 @@ const ADULT_KEYWORDS = [
   
   // Common adult movie title patterns
   'hot', 'sexy', 'bold', 'uncensored', 'uncut',
-  'after dark', 'midnight', 'forbidden',
+  'after dark', 'forbidden',
   
   // Director/production patterns known for adult content
   'bala singh', 'ram gopal varma ki aag'
