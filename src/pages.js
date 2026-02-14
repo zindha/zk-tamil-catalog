@@ -185,8 +185,8 @@ export const configureHtml = `<!DOCTYPE html>
       <p style="margin: 10px 0; color: #059669;">Your addon manifest URL:</p>
       <div class="manifest-url" id="manifestUrl"></div>
       <div class="button-group">
-        <button class="copy-btn" id="copyBtn">📋 Copy Link</button>
-        <button class="open-btn" id="openBtn">🚀 Install to Stremio</button>
+        <button class="copy-btn" id="copyBtn" type="button">📋 Copy Link</button>
+        <button class="open-btn" id="openBtn" type="button">🚀 Install to Stremio</button>
       </div>
     </div>
     <div class="info">
@@ -198,40 +198,64 @@ export const configureHtml = `<!DOCTYPE html>
   </div>
   <script>
     let manifestUrl = '';
+    
     document.getElementById('configForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      const config = {
-        apiKey: document.getElementById('apiKey').value,
+      
+      var config = {
+        apiKey: document.getElementById('apiKey').value.trim(),
         cacheDuration: parseInt(document.getElementById('cacheDuration').value),
         includeDubbed: document.getElementById('includeDubbed').checked
       };
-      const encodedConfig = btoa(JSON.stringify(config));
-      const workerUrl = window.location.origin;
+      
+      var configJson = JSON.stringify(config);
+      var encodedConfig = btoa(configJson);
+      var workerUrl = window.location.origin;
       manifestUrl = workerUrl + '/' + encodedConfig + '/manifest.json';
+      
       document.getElementById('successSection').classList.add('show');
       document.getElementById('manifestUrl').textContent = manifestUrl;
       document.getElementById('successSection').scrollIntoView({ behavior: 'smooth' });
     });
-    document.getElementById('copyBtn').addEventListener('click', async function() {
-      try {
-        await navigator.clipboard.writeText(manifestUrl);
-        const btn = this;
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '✓ Copied!';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.innerHTML = originalText; btn.classList.remove('copied'); }, 2000);
-      } catch (err) {
-        const textArea = document.createElement('textarea');
+    
+    document.getElementById('copyBtn').addEventListener('click', function() {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(manifestUrl).then(function() {
+          var btn = document.getElementById('copyBtn');
+          var originalText = btn.innerHTML;
+          btn.innerHTML = '✓ Copied!';
+          btn.classList.add('copied');
+          setTimeout(function() {
+            btn.innerHTML = originalText;
+            btn.classList.remove('copied');
+          }, 2000);
+        }).catch(function(err) {
+          fallbackCopy();
+        });
+      } else {
+        fallbackCopy();
+      }
+      
+      function fallbackCopy() {
+        var textArea = document.createElement('textarea');
         textArea.value = manifestUrl;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
         document.body.appendChild(textArea);
         textArea.select();
-        document.execCommand('copy');
+        try {
+          document.execCommand('copy');
+          alert('Link copied to clipboard!');
+        } catch (err) {
+          alert('Failed to copy. Please copy manually: ' + manifestUrl);
+        }
         document.body.removeChild(textArea);
-        alert('Link copied to clipboard!');
       }
     });
+    
     document.getElementById('openBtn').addEventListener('click', function() {
-      window.location.href = 'stremio://' + manifestUrl.replace('https://', '');
+      var stremioUrl = manifestUrl.replace('https://', '').replace('http://', '');
+      window.location.href = 'stremio://' + stremioUrl;
     });
   </script>
 </body>
