@@ -1,12 +1,27 @@
 import { getManifest } from './manifest.js';
 import { handleCatalog } from './catalog.js';
+import { indexHtml, configureHtml } from './pages.js';
 
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
     
-    // Parse config from URL (for manifest and catalog routes)
+    // Serve home page
+    if (path === '/' || path === '/index.html') {
+      return new Response(indexHtml, {
+        headers: { 'Content-Type': 'text/html; charset=utf-8' }
+      });
+    }
+    
+    // Serve configure page
+    if (path === '/configure' || path === '/configure.html') {
+      return new Response(configureHtml, {
+        headers: { 'Content-Type': 'text/html; charset=utf-8' }
+      });
+    }
+    
+    // Parse config from URL
     const configMatch = path.match(/^\/([^\/]+)\//);
     let config = {};
     
@@ -14,7 +29,10 @@ export default {
       try {
         config = JSON.parse(atob(configMatch[1]));
       } catch (e) {
-        return new Response('Invalid configuration', { status: 400 });
+        return new Response(JSON.stringify({ error: 'Invalid configuration' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
       }
     }
     
@@ -74,7 +92,6 @@ export default {
       }
     }
     
-    // Let Cloudflare serve static assets (index.html, configure.html, style.css)
-    return env.ASSETS.fetch(request);
+    return new Response('Not Found', { status: 404 });
   }
 };
