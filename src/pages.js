@@ -4,110 +4,79 @@ export const indexHtml = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZK Tamil Catalog - Stremio Addon</title>
+  <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/zindha/zk-tamil-catalog/refs/heads/main/assets/zk_tamil_catalog_favicon.ico">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --primary-color: #667eea;
-      --secondary-color: #764ba2;
-      --text-dark: #2d3748;
-      --text-light: #718096;
-      --bg-light: #f7fafc;
-      --card-bg: #ffffff;
-      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
-      --shadow-lg: 0 10px 40px rgba(102, 126, 234, 0.2);
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      line-height: 1.6;
-      color: var(--text-dark);
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-    }
-    .hero { min-height: 100vh; padding: 40px 20px; display: flex; align-items: center; justify-content: center; }
-    .hero-content { max-width: 1200px; width: 100%; }
-    .brand { text-align: center; margin-bottom: 60px; animation: fadeInDown 0.8s ease; }
-    .logo-icon { font-size: 5rem; margin-bottom: 20px; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2)); }
-    .brand h1 { font-size: 3.5rem; color: white; margin-bottom: 10px; font-weight: 800; text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }
-    .tagline { font-size: 1.3rem; color: rgba(255, 255, 255, 0.9); font-weight: 300; }
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 50px; animation: fadeInUp 0.8s ease 0.2s both; }
-    .feature-card { background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: var(--shadow-md); transition: all 0.3s ease; text-align: center; }
-    .feature-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
-    .feature-icon { font-size: 2.5rem; margin-bottom: 15px; }
-    .feature-card h3 { color: var(--text-dark); margin-bottom: 10px; font-size: 1.3rem; }
-    .feature-card p { color: var(--text-light); font-size: 0.95rem; }
-    .cta-section { text-align: center; margin: 50px 0; animation: fadeInUp 0.8s ease 0.4s both; }
-    .cta-button { display: inline-flex; align-items: center; gap: 12px; background: white; color: var(--primary-color); padding: 18px 40px; border-radius: 50px; font-size: 1.2rem; font-weight: 700; text-decoration: none; box-shadow: var(--shadow-lg); transition: all 0.3s ease; }
-    .cta-button:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 15px 50px rgba(255, 255, 255, 0.3); }
-    .help-text { margin-top: 15px; color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; }
-    .info-section { background: white; padding: 50px; border-radius: 20px; box-shadow: var(--shadow-lg); margin: 50px 0; animation: fadeInUp 0.8s ease 0.6s both; }
-    .info-section h2 { text-align: center; color: var(--text-dark); font-size: 2rem; margin-bottom: 40px; }
-    .info-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
-    .info-item { padding: 20px; border-left: 4px solid var(--primary-color); background: var(--bg-light); border-radius: 8px; }
-    .info-item strong { display: block; color: var(--primary-color); margin-bottom: 8px; font-size: 1.1rem; }
-    .info-item p { color: var(--text-light); font-size: 0.95rem; }
-    .tech-stack { text-align: center; margin-top: 50px; animation: fadeInUp 0.8s ease 0.8s both; }
-    .tech-stack h3 { color: white; margin-bottom: 20px; font-size: 1.5rem; }
-    .tech-badges { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
-    .badge { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); color: white; padding: 10px 20px; border-radius: 25px; font-weight: 600; font-size: 0.9rem; border: 1px solid rgba(255, 255, 255, 0.3); }
-    footer { text-align: center; padding: 30px 20px; color: rgba(255, 255, 255, 0.9); font-size: 0.9rem; }
-    .disclaimer { margin-top: 10px; font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); }
-    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 768px) {
-      .brand h1 { font-size: 2.5rem; }
-      .tagline { font-size: 1.1rem; }
-      .logo-icon { font-size: 4rem; }
-      .features-grid { grid-template-columns: 1fr; }
-      .info-section { padding: 30px 20px; }
-      .info-content { grid-template-columns: 1fr; }
-      .cta-button { padding: 15px 30px; font-size: 1.1rem; }
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+    .container { background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 600px; width: 100%; padding: 50px; text-align: center; }
+    .logo-img { width: 200px; height: auto; margin-bottom: 20px; }
+    .title { color: #333; font-size: 2.5rem; margin-bottom: 10px; font-weight: 800; }
+    .subtitle { color: #666; font-size: 1.1rem; margin-bottom: 40px; }
+    .btn { display: inline-block; padding: 15px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 50px; font-weight: 600; font-size: 1.1rem; transition: all 0.3s; margin: 10px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6); }
+    .features { margin-top: 50px; text-align: left; }
+    .feature { display: flex; align-items: start; margin-bottom: 20px; }
+    .feature-icon { font-size: 1.5rem; margin-right: 15px; }
+    .feature-text h3 { color: #333; font-size: 1.1rem; margin-bottom: 5px; }
+    .feature-text p { color: #666; font-size: 0.9rem; line-height: 1.5; }
+    .footer { margin-top: 40px; padding-top: 30px; border-top: 2px solid #f0f0f0; color: #999; font-size: 0.85rem; }
   </style>
 </head>
 <body>
-  <div class="hero">
-    <div class="hero-content">
-      <div class="brand">
-        <div class="logo-icon">🎬</div>
-        <h1>ZK Tamil Catalog</h1>
-        <p class="tagline">Your Ultimate Tamil Movie Catalog for Stremio</p>
-      </div>
-      <div class="features-grid">
-        <div class="feature-card"><div class="feature-icon">⭐</div><h3>Top Rated</h3><p>Browse highest-rated Tamil movies</p></div>
-        <div class="feature-card"><div class="feature-icon">🆕</div><h3>Latest Releases</h3><p>Stay updated with new Tamil movies</p></div>
-        <div class="feature-card"><div class="feature-icon">📅</div><h3>Year-wise Browse</h3><p>Explore movies by release year</p></div>
-        <div class="feature-card"><div class="feature-icon">🌍</div><h3>Dubbed Movies</h3><p>Separate catalog for Tamil-dubbed content</p></div>
-        <div class="feature-card"><div class="feature-icon">🔍</div><h3>Smart Search</h3><p>Find any Tamil movie instantly</p></div>
-        <div class="feature-card"><div class="feature-icon">♾️</div><h3>Infinite Scroll</h3><p>Seamless pagination support</p></div>
-      </div>
-      <div class="cta-section">
-        <a href="/configure" class="cta-button"><span>🚀 Configure &amp; Install</span></a>
-        <p class="help-text">Requires a free TMDB API key</p>
-      </div>
-      <div class="info-section">
-        <h2>Why ZK Tamil Catalog?</h2>
-        <div class="info-content">
-          <div class="info-item"><strong>🎯 Pure Tamil Focus</strong><p>Exclusively curated Tamil movies with proper language filtering</p></div>
-          <div class="info-item"><strong>⚡ Lightning Fast</strong><p>Powered by Cloudflare Workers edge network for instant loading</p></div>
-          <div class="info-item"><strong>🔒 Privacy First</strong><p>Your TMDB API key stays with you - encoded in your personal addon URL</p></div>
-          <div class="info-item"><strong>💾 Smart Caching</strong><p>Configurable cache duration to reduce API calls and improve speed</p></div>
+  <div class="container">
+    <img src="https://raw.githubusercontent.com/zindha/zk-tamil-catalog/refs/heads/main/assets/Logo.png" alt="ZK Tamil Catalog Logo" class="logo-img">
+    <h1 class="title">ZK Tamil Catalog</h1>
+    <p class="subtitle">Your gateway to Tamil cinema on Stremio</p>
+    
+    <a href="/configure" class="btn">⚙️ Configure & Install</a>
+    
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🎬</div>
+        <div class="feature-text">
+          <h3>Curated Tamil Movies</h3>
+          <p>Browse top-rated, latest releases, and movies organized by decade (1980s-2020s)</p>
         </div>
       </div>
-      <div class="tech-stack">
-        <h3>Built With</h3>
-        <div class="tech-badges">
-          <span class="badge">Cloudflare Workers</span>
-          <span class="badge">TMDB API</span>
-          <span class="badge">Stremio Protocol</span>
-          <span class="badge">Edge Caching</span>
+      
+      <div class="feature">
+        <div class="feature-icon">🌐</div>
+        <div class="feature-text">
+          <h3>Dubbed Content Separation</h3>
+          <p>Optional catalog for Tamil dubbed movies from other languages</p>
+        </div>
+      </div>
+      
+      <div class="feature">
+        <div class="feature-icon">🔍</div>
+        <div class="feature-text">
+          <h3>Search Capability</h3>
+          <p>Find any Tamil movie instantly with integrated search</p>
+        </div>
+      </div>
+      
+      <div class="feature">
+        <div class="feature-icon">🚫</div>
+        <div class="feature-text">
+          <h3>Family Friendly</h3>
+          <p>Adult content automatically filtered, safe for all audiences</p>
+        </div>
+      </div>
+      
+      <div class="feature">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-text">
+          <h3>Fast & Cached</h3>
+          <p>Edge-cached responses for instant loading</p>
         </div>
       </div>
     </div>
+    
+    <div class="footer">
+      <p><strong>Note:</strong> Install a TMDB metadata addon in Stremio for full movie details</p>
+      <p style="margin-top: 10px;">Powered by TMDB • Made with ❤️ for Tamil cinema fans</p>
+    </div>
   </div>
-  <footer>
-    <p>Made with ❤️ for Tamil cinema lovers | Open Source Project</p>
-    <p class="disclaimer">This addon does not provide streams. It is a catalog-only addon for movie discovery.</p>
-  </footer>
 </body>
 </html>`;
 
@@ -117,6 +86,7 @@ export const configureHtml = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZK Tamil Catalog - Configuration</title>
+  <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/zindha/zk-tamil-catalog/refs/heads/main/assets/zk_tamil_catalog_favicon.ico">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
@@ -124,6 +94,7 @@ export const configureHtml = `<!DOCTYPE html>
     .back-link { display: inline-block; margin-bottom: 20px; color: #667eea; text-decoration: none; font-weight: 600; }
     .back-link:hover { text-decoration: underline; }
     .logo { text-align: center; margin-bottom: 30px; }
+    .logo-img { width: 120px; height: auto; margin-bottom: 10px; }
     .logo h1 { color: #667eea; font-size: 2rem; margin-bottom: 5px; }
     .logo p { color: #666; font-size: 0.9rem; }
     .form-group { margin-bottom: 25px; }
@@ -157,7 +128,8 @@ export const configureHtml = `<!DOCTYPE html>
   <div class="container">
     <a href="/" class="back-link">← Back to Home</a>
     <div class="logo">
-      <h1>🎬 ZK Tamil Catalog</h1>
+      <img src="https://raw.githubusercontent.com/zindha/zk-tamil-catalog/refs/heads/main/assets/Logo.png" alt="ZK Logo" class="logo-img">
+      <h1>ZK Tamil Catalog</h1>
       <p>Configure your Tamil movie catalog</p>
     </div>
     <form id="configForm">
