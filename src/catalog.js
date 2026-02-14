@@ -1,46 +1,53 @@
 import { TMDBClient } from './tmdb.js';
 
 export async function handleCatalog(type, id, extra, config) {
-  console.log('Catalog request:', { type, id, extra, config: { ...config, apiKey: config.apiKey ? 'SET' : 'NOT SET' } });
+  console.log('=== CATALOG HANDLER START ===');
+  console.log('Type:', type);
+  console.log('ID:', id);
+  console.log('Extra:', JSON.stringify(extra));
+  console.log('Config keys:', Object.keys(config));
+  console.log('Has API key:', !!config?.apiKey);
   
   // Check if API key exists
   if (!config || !config.apiKey) {
-    console.error('No API key provided');
+    console.error('CRITICAL: No API key in config!');
+    console.error('Config object:', JSON.stringify(config));
     return { 
-      metas: [],
-      error: 'TMDB API key not configured'
+      metas: []
     };
   }
   
-  const tmdb = new TMDBClient(config.apiKey, config.cacheDuration || 3600);
-  const page = Math.floor((parseInt(extra.skip) || 0) / 20) + 1;
-  
-  let data;
+  console.log('API key found, length:', config.apiKey.length);
   
   try {
+    const tmdb = new TMDBClient(config.apiKey, config.cacheDuration || 3600);
+    const page = Math.floor((parseInt(extra.skip) || 0) / 20) + 1;
+    
+    let data;
+    
     switch(id) {
       case 'tamil_top_rated':
-        console.log('Fetching top rated, page:', page);
+        console.log('Fetching TOP RATED, page:', page);
         data = await tmdb.getTopRated(page);
         break;
         
       case 'tamil_latest':
-        console.log('Fetching latest, page:', page);
+        console.log('Fetching LATEST, page:', page);
         data = await tmdb.getLatest(page);
         break;
         
       case 'tamil_by_year':
         const year = extra.year || new Date().getFullYear();
-        console.log('Fetching by year:', year, 'page:', page);
+        console.log('Fetching BY YEAR:', year, 'page:', page);
         data = await tmdb.getByYear(year, page);
         break;
         
       case 'tamil_dubbed':
         if (!config.includeDubbed) {
-          console.log('Dubbed movies disabled in config');
+          console.log('Dubbed movies disabled');
           return { metas: [] };
         }
-        console.log('Fetching dubbed, page:', page);
+        console.log('Fetching DUBBED, page:', page);
         data = await tmdb.getDubbed(page);
         break;
         
@@ -48,7 +55,7 @@ export async function handleCatalog(type, id, extra, config) {
         if (!extra.search) {
           return { metas: [] };
         }
-        console.log('Searching:', extra.search, 'page:', page);
+        console.log('SEARCHING:', extra.search, 'page:', page);
         data = await tmdb.search(extra.search, page);
         break;
         
@@ -57,26 +64,28 @@ export async function handleCatalog(type, id, extra, config) {
         return { metas: [] };
     }
     
-    if (!data || !data.results) {
-      console.error('No results from TMDB:', data);
+    console.log('TMDB response received');
+    console.log('Results count:', data?.results?.length || 0);
+    
+    if (!data || !data.results || data.results.length === 0) {
+      console.warn('No results from TMDB');
       return { metas: [] };
     }
-    
-    console.log('TMDB returned', data.results.length, 'movies');
     
     const metas = data.results
       .filter(movie => movie.poster_path)
       .map(movie => tmdb.convertToMeta(movie));
     
-    console.log('Converted to', metas.length, 'metas');
+    console.log('Final metas count:', metas.length);
+    console.log('=== CATALOG HANDLER END ===');
     
     return { metas };
     
   } catch (error) {
-    console.error('Catalog error:', error.message, error.stack);
+    console.error('CATALOG ERROR:', error.message);
+    console.error('Stack:', error.stack);
     return { 
-      metas: [],
-      error: error.message 
+      metas: []
     };
   }
 }
