@@ -67,11 +67,23 @@ export async function handleCatalog(type, id, extra, config) {
     
     console.log('TMDB returned', data.results.length, 'movies');
     
+    // Filter: poster required + no adult content
     const metas = data.results
-      .filter(movie => movie.poster_path)
+      .filter(movie => {
+        // Must have poster
+        if (!movie.poster_path) return false;
+        
+        // Extra safety: filter adult content
+        if (movie.adult === true) {
+          console.log('Filtered adult content:', movie.title);
+          return false;
+        }
+        
+        return true;
+      })
       .map(movie => tmdb.convertToMeta(movie));
     
-    console.log('Returning', metas.length, 'movies');
+    console.log('Returning', metas.length, 'movies (adult content filtered)');
     
     return { metas };
     
