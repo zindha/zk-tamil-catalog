@@ -8,7 +8,6 @@ export class TMDBClient {
 
   async fetchWithCache(url, cacheKey) {
     try {
-      // Try to get from cache first
       const cache = caches.default;
       const cacheUrl = new URL(`https://cache.local/${cacheKey}`);
       
@@ -21,7 +20,6 @@ export class TMDBClient {
       
       console.log('Cache MISS:', cacheKey);
       
-      // Fetch from TMDB
       response = await fetch(url, {
         headers: { 'Accept': 'application/json' }
       });
@@ -32,7 +30,6 @@ export class TMDBClient {
       
       const data = await response.json();
       
-      // Store in cache
       const cacheResponse = new Response(JSON.stringify(data), {
         headers: {
           'Content-Type': 'application/json',
@@ -62,9 +59,29 @@ export class TMDBClient {
     return this.fetchWithCache(url, `latest_ta_p${page}`);
   }
 
-  async getByYear(year, page = 1) {
-    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&primary_release_year=${year}&sort_by=popularity.desc&page=${page}&language=en-US&with_runtime.gte=40`;
-    return this.fetchWithCache(url, `year_${year}_ta_p${page}`);
+  async getByDecade(startYear, endYear, page = 1) {
+    const url = `${TMDB_BASE}/discover/movie?api_key=${this.apiKey}&with_original_language=ta&primary_release_date.gte=${startYear}-01-01&primary_release_date.lte=${endYear}-12-31&sort_by=popularity.desc&page=${page}&language=en-US&with_runtime.gte=40`;
+    return this.fetchWithCache(url, `decade_${startYear}_${endYear}_ta_p${page}`);
+  }
+
+  async get1980s(page = 1) {
+    return this.getByDecade(1980, 1989, page);
+  }
+
+  async get1990s(page = 1) {
+    return this.getByDecade(1990, 1999, page);
+  }
+
+  async get2000s(page = 1) {
+    return this.getByDecade(2000, 2009, page);
+  }
+
+  async get2010s(page = 1) {
+    return this.getByDecade(2010, 2019, page);
+  }
+
+  async get2020s(page = 1) {
+    return this.getByDecade(2020, 2029, page);
   }
 
   async getDubbed(page = 1) {
@@ -78,22 +95,9 @@ export class TMDBClient {
     return this.fetchWithCache(url, `search_${query}_p${page}`);
   }
 
-  async getImdbId(tmdbId) {
-    try {
-      const url = `${TMDB_BASE}/movie/${tmdbId}/external_ids?api_key=${this.apiKey}`;
-      const data = await this.fetchWithCache(url, `imdb_${tmdbId}`);
-      return data.imdb_id || null;
-    } catch (error) {
-      console.error('Failed to get IMDB ID for TMDB:', tmdbId);
-      return null;
-    }
-  }
-
-  convertToMeta(movie, imdbId = null) {
-    const id = imdbId || `tmdb:${movie.id}`;
-    
+  convertToMeta(movie) {
     const meta = {
-      id: id,
+      id: `tmdb:${movie.id}`,
       type: 'movie',
       name: movie.title || movie.original_title || 'Unknown',
       poster: movie.poster_path 
