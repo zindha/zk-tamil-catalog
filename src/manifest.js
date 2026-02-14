@@ -1,18 +1,18 @@
 export function getManifest(config) {
   return {
     id: 'org.zktamil.catalog',
-    version: '1.0.7',
+    version: '1.1.0',
     name: 'ZK Tamil Catalog',
-    description: 'Pure Tamil movie catalog with dubbed separation. Install a TMDB metadata addon for full details.',
+    description: 'Pure Tamil movie & series catalog with dubbed separation. Install a TMDB metadata addon for full details.',
     
-    // Your GitHub logo URL
     logo: 'https://raw.githubusercontent.com/zindha/zk-tamil-catalog/refs/heads/main/assets/Logo.png',
     background: 'https://raw.githubusercontent.com/zindha/zk-tamil-catalog/refs/heads/main/assets/Logo.png',
     
     resources: ['catalog'],
-    types: ['movie'],
+    types: ['movie', 'series'],
     
     catalogs: [
+      // Movies
       {
         type: 'movie',
         id: 'tamil_top_rated',
@@ -83,6 +83,32 @@ export function getManifest(config) {
         name: 'Search Tamil Movies',
         extra: [
           { name: 'search', isRequired: true },
+          { name: 'skip', isRequired: false }
+        ]
+      },
+      
+      // Series
+      {
+        type: 'series',
+        id: 'tamil_series_trending',
+        name: 'Tamil Series - Trending',
+        extra: [
+          { name: 'skip', isRequired: false }
+        ]
+      },
+      {
+        type: 'series',
+        id: 'tamil_series_popular',
+        name: 'Tamil Series - Popular',
+        extra: [
+          { name: 'skip', isRequired: false }
+        ]
+      },
+      {
+        type: 'series',
+        id: 'tamil_series_latest',
+        name: 'Tamil Series - Latest',
+        extra: [
           { name: 'skip', isRequired: false }
         ]
       }
