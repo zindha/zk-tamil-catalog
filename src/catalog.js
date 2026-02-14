@@ -23,9 +23,24 @@ export async function handleCatalog(type, id, extra, config) {
         data = await tmdb.getLatest(page);
         break;
         
-      case 'tamil_by_year':
-        const year = extra.year || new Date().getFullYear();
-        data = await tmdb.getByYear(year, page);
+      case 'tamil_1980s':
+        data = await tmdb.get1980s(page);
+        break;
+        
+      case 'tamil_1990s':
+        data = await tmdb.get1990s(page);
+        break;
+        
+      case 'tamil_2000s':
+        data = await tmdb.get2000s(page);
+        break;
+        
+      case 'tamil_2010s':
+        data = await tmdb.get2010s(page);
+        break;
+        
+      case 'tamil_2020s':
+        data = await tmdb.get2020s(page);
         break;
         
       case 'tamil_dubbed':
@@ -52,22 +67,11 @@ export async function handleCatalog(type, id, extra, config) {
     
     console.log('TMDB returned', data.results.length, 'movies');
     
-    // Filter movies with posters
-    const moviesWithPosters = data.results.filter(movie => movie.poster_path);
+    const metas = data.results
+      .filter(movie => movie.poster_path)
+      .map(movie => tmdb.convertToMeta(movie));
     
-    // Fetch IMDB IDs for all movies in parallel
-    const imdbPromises = moviesWithPosters.map(movie => 
-      tmdb.getImdbId(movie.id)
-    );
-    
-    const imdbIds = await Promise.all(imdbPromises);
-    
-    // Convert to metas with IMDB IDs
-    const metas = moviesWithPosters.map((movie, index) => {
-      return tmdb.convertToMeta(movie, imdbIds[index]);
-    });
-    
-    console.log('Returning', metas.length, 'movies with IMDB IDs');
+    console.log('Returning', metas.length, 'movies');
     
     return { metas };
     
