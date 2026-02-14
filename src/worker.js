@@ -21,8 +21,8 @@ export default {
       });
     }
     
-    // Parse config from URL
-    const configMatch = path.match(/^\/([^\/]+)\//);
+    // Parse config from URL path
+    const configMatch = path.match(/^\/([A-Za-z0-9+/=]+)\//);
     let config = {};
     
     if (configMatch) {
@@ -48,24 +48,29 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
     
-    // Handle manifest
+    // Handle manifest.json
     if (path.endsWith('/manifest.json')) {
       return new Response(
         JSON.stringify(getManifest(config)),
         { 
           headers: {
             ...corsHeaders,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json; charset=utf-8'
           }
         }
       );
     }
     
-    // Handle catalog requests
-    const catalogMatch = path.match(/\/catalog\/([^\/]+)\/([^\/]+)\.json/);
+    // Handle catalog requests: /catalog/:type/:id.json
+    const catalogMatch = path.match(/\/catalog\/([^\/]+)\/([^\/]+)\.json$/);
     if (catalogMatch) {
       const [, type, id] = catalogMatch;
-      const extra = Object.fromEntries(url.searchParams);
+      const extra = {};
+      
+      // Parse query parameters
+      for (const [key, value] of url.searchParams) {
+        extra[key] = value;
+      }
       
       try {
         const result = await handleCatalog(type, id, extra, config);
@@ -74,24 +79,28 @@ export default {
           { 
             headers: {
               ...corsHeaders,
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json; charset=utf-8',
+              'Cache-Control': 'public, max-age=3600'
             }
           }
         );
       } catch (error) {
         return new Response(
-          JSON.stringify({ error: error.message }), 
+          JSON.stringify({ metas: [], error: error.message }), 
           { 
             status: 500,
             headers: {
               ...corsHeaders,
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json; charset=utf-8'
             }
           }
         );
       }
     }
     
-    return new Response('Not Found', { status: 404 });
+    return new Response('Not Found', { 
+      status: 404,
+      headers: { 'Content-Type': 'text/plain' }
+    });
   }
 };
