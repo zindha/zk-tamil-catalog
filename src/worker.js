@@ -23,27 +23,6 @@ export default {
       });
     }
     
-    // Parse config from URL path (base64 encoded)
-    const configMatch = path.match(/^\/([A-Za-z0-9+/=]+)\//);
-    let config = {};
-    
-    if (configMatch) {
-      try {
-        const decoded = atob(configMatch[1]);
-        config = JSON.parse(decoded);
-        console.log('Config decoded successfully, has API key:', !!config.apiKey);
-      } catch (e) {
-        console.error('Config decode error:', e);
-        return new Response(JSON.stringify({ error: 'Invalid configuration' }), {
-          status: 400,
-          headers: { 
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          }
-        });
-      }
-    }
-    
     // CORS headers
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
@@ -59,8 +38,24 @@ export default {
       });
     }
     
+    // Parse config from URL - MORE FLEXIBLE REGEX
+    // Matches /BASE64STRING/anything or /BASE64STRING
+    const configMatch = path.match(/^\/([A-Za-z0-9+\/=_-]+)(?:\/|$)/);
+    let config = {};
+    
+    if (configMatch && configMatch[1] !== 'configure') {
+      try {
+        const decoded = atob(configMatch[1]);
+        config = JSON.parse(decoded);
+        console.log('Config decoded successfully');
+      } catch (e) {
+        console.error('Config decode error:', e.message);
+        // Don't return error here, continue with empty config
+      }
+    }
+    
     // Handle manifest.json
-    if (path.endsWith('/manifest.json')) {
+    if (path.includes('/manifest.json')) {
       console.log('Serving manifest');
       const manifest = getManifest(config);
       return new Response(
@@ -75,44 +70,46 @@ export default {
     }
     
     // Handle catalog requests: /catalog/:type/:id.json
-    const catalogMatch = path.match(/\/catalog\/([^\/]+)\/([^\/]+)\.json$/);
-    if (catalogMatch) {
-      const [, type, id] = catalogMatch;
-      console.log('Catalog request:', type, id);
-      
-      const extra = {};
-      for (const [key, value] of url.searchParams) {
-        extra[key] = value;
-      }
-      
-      try {
-        const result = await handleCatalog(type, id, extra, config);
+    if (path.includes('/catalog/')) {
+      const catalogMatch = path.match(/\/catalog\/([^\/]+)\/([^\/]+)\.json$/);
+      if (catalogMatch) {
+        const [, type, id] = catalogMatch;
+        console.log('Catalog request:', type, id);
         
-        return new Response(
-          JSON.stringify(result), 
-          { 
-            headers: {
-              ...corsHeaders,
-              'Content-Type': 'application/json; charset=utf-8',
-              'Cache-Control': 'public, max-age=1800'
+        const extra = {};
+        for (const [key, value] of url.searchParams) {
+          extra[key] = value;
+        }
+        
+        try {
+          const result = await handleCatalog(type, id, extra, config);
+          
+          return new Response(
+            JSON.stringify(result), 
+            { 
+              headers: {
+                ...corsHeaders,
+                'Content-Type': 'application/json; charset=utf-8',
+                'Cache-Control': 'public, max-age=1800'
+              }
             }
-          }
-        );
-      } catch (error) {
-        console.error('Catalog handler error:', error);
-        return new Response(
-          JSON.stringify({ 
-            metas: [], 
-            error: error.message 
-          }), 
-          { 
-            status: 200, // Return 200 even on error for Stremio compatibility
-            headers: {
-              ...corsHeaders,
-              'Content-Type': 'application/json; charset=utf-8'
+          );
+        } catch (error) {
+          console.error('Catalog handler error:', error);
+          return new Response(
+            JSON.stringify({ 
+              metas: [], 
+              error: error.message 
+            }), 
+            { 
+              status: 200,
+              headers: {
+                ...corsHeaders,
+                'Content-Type': 'application/json; charset=utf-8'
+              }
             }
-          }
-        );
+          );
+        }
       }
     }
     
