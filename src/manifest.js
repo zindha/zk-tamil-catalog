@@ -1,7 +1,7 @@
 export function getManifest(config) {
   return {
     id: 'org.zktamil.catalog',
-    version: '1.0.0',
+    version: '1.1.0',
     name: 'ZK Tamil Catalog',
     description: 'Pure Tamil movie catalog with dubbed separation',
     logo: 'https://i.imgur.com/your-logo.png', // Add your logo URL
