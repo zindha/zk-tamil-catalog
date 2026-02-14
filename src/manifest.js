@@ -1,7 +1,7 @@
 export function getManifest(config) {
   return {
     id: 'org.zktamil.catalog',
-    version: '1.1.0',
+    version: '1.1.1',
     name: 'ZK Tamil Catalog',
     description: 'Pure Tamil movie & series catalog with dubbed separation. Install a TMDB metadata addon for full details.',
     
